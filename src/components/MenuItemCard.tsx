@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Minus, X, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, X } from 'lucide-react';
 import { MenuItem, Variation, AddOn } from '../types';
 
 interface MenuItemCardProps {
@@ -9,11 +9,11 @@ interface MenuItemCardProps {
   onUpdateQuantity: (id: string, quantity: number) => void;
 }
 
-const MenuItemCard: React.FC<MenuItemCardProps> = ({ 
-  item, 
-  onAddToCart, 
-  quantity, 
-  onUpdateQuantity 
+const MenuItemCard: React.FC<MenuItemCardProps> = ({
+  item,
+  onAddToCart,
+  quantity,
+  onUpdateQuantity
 }) => {
   const [showCustomization, setShowCustomization] = useState(false);
   const [selectedVariation, setSelectedVariation] = useState<Variation | undefined>(
@@ -43,7 +43,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
   const handleCustomizedAddToCart = () => {
     // Convert selectedAddOns back to regular AddOn array for cart
-    const addOnsForCart: AddOn[] = selectedAddOns.flatMap(addOn => 
+    const addOnsForCart: AddOn[] = selectedAddOns.flatMap(addOn =>
       Array(addOn.quantity).fill({ ...addOn, quantity: undefined })
     );
     onAddToCart(item, 1, selectedVariation, addOnsForCart);
@@ -64,12 +64,12 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
   const updateAddOnQuantity = (addOn: AddOn, quantity: number) => {
     setSelectedAddOns(prev => {
       const existingIndex = prev.findIndex(a => a.id === addOn.id);
-      
+
       if (quantity === 0) {
         // Remove add-on if quantity is 0
         return prev.filter(a => a.id !== addOn.id);
       }
-      
+
       if (existingIndex >= 0) {
         // Update existing add-on quantity
         const updated = [...prev];
@@ -93,14 +93,14 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
   return (
     <>
-      <div className={`bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group animate-scale-in border border-gray-100 ${!item.available ? 'opacity-60' : ''}`}>
+      <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group animate-scale-in border border-koibito-gray ${!item.available ? 'opacity-60' : ''}`}>
         {/* Image Container with Badges */}
-        <div className="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="relative h-56 bg-koibito-gray">
           {item.image ? (
             <img
               src={item.image}
               alt={item.name}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500 group-hover:scale-110"
               loading="lazy"
               decoding="async"
               onError={(e) => {
@@ -110,159 +110,131 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
             />
           ) : null}
           <div className={`absolute inset-0 flex items-center justify-center ${item.image ? 'hidden' : ''}`}>
-            <div className="text-6xl opacity-20 text-gray-400">☕</div>
+            <div className="text-6xl opacity-10 text-koibito-dark font-display">🍱</div>
           </div>
-          
+
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {item.isOnDiscount && item.discountPrice && (
-              <div className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">
+              <div className="bg-koibito-red text-white text-[10px] font-bold px-3 py-1 rounded-sm shadow-sm tracking-widest uppercase">
                 SALE
               </div>
             )}
             {item.popular && (
-              <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-                ⭐ POPULAR
+              <div className="bg-koibito-accent text-white text-[10px] font-bold px-3 py-1 rounded-sm shadow-sm tracking-widest uppercase">
+                ⭐ BEST SELLER
               </div>
             )}
           </div>
-          
+
           {!item.available && (
-            <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-              UNAVAILABLE
-            </div>
-          )}
-          
-          {/* Discount Percentage Badge */}
-          {item.isOnDiscount && item.discountPrice && (
-            <div className="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm text-red-600 text-xs font-bold px-2 py-1 rounded-full shadow-lg">
-              {Math.round(((item.basePrice - item.discountPrice) / item.basePrice) * 100)}% OFF
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <span className="bg-white/90 text-koibito-red text-xs font-bold px-4 py-2 rounded-sm shadow-lg tracking-[0.1em] uppercase">
+                UNAVAILABLE
+              </span>
             </div>
           )}
         </div>
-        
+
         {/* Content */}
-        <div className="p-5">
-          <div className="flex items-start justify-between mb-3">
-            <h4 className="text-lg font-semibold text-gray-900 leading-tight flex-1 pr-2">{item.name}</h4>
-            {item.variations && item.variations.length > 0 && (
-              <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full whitespace-nowrap">
-                {item.variations.length} sizes
-              </div>
-            )}
+        <div className="p-6">
+          <div className="flex items-start justify-between mb-2">
+            <h4 className="font-display text-2xl text-koibito-dark leading-tight flex-1 pr-2">{item.name}</h4>
           </div>
-          
-          <p className={`text-sm mb-4 leading-relaxed ${!item.available ? 'text-gray-400' : 'text-gray-600'}`}>
-            {!item.available ? 'Currently Unavailable' : item.description}
+
+          <p className={`text-sm mb-6 font-sans leading-relaxed ${!item.available ? 'text-gray-400' : 'text-gray-600'}`}>
+            {!item.available ? 'This item is currently out of stock.' : item.description}
           </p>
-          
+
           {/* Pricing Section */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mt-auto">
             <div className="flex-1">
               {item.isOnDiscount && item.discountPrice ? (
-                <div className="space-y-1">
+                <div className="flex flex-col">
                   <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-red-600">
-                      ₱{item.discountPrice.toFixed(2)}
+                    <span className="text-2xl font-display text-koibito-red">
+                      ₱{item.discountPrice.toFixed(0)}
                     </span>
-                    <span className="text-sm text-gray-500 line-through">
-                      ₱{item.basePrice.toFixed(2)}
+                    <span className="text-sm text-gray-400 font-sans line-through decoration-red-900/40">
+                      ₱{item.basePrice.toFixed(0)}
                     </span>
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    Save ₱{(item.basePrice - item.discountPrice).toFixed(2)}
                   </div>
                 </div>
               ) : (
-                <div className="text-2xl font-bold text-gray-900">
-                  ₱{item.basePrice.toFixed(2)}
-                </div>
-              )}
-              
-              {item.variations && item.variations.length > 0 && (
-                <div className="text-xs text-gray-500 mt-1">
-                  Starting price
+                <div className="text-2xl font-display text-koibito-dark">
+                  ₱{item.basePrice.toFixed(0)}
                 </div>
               )}
             </div>
-            
+
             {/* Action Buttons */}
             <div className="flex-shrink-0">
               {!item.available ? (
                 <button
                   disabled
-                  className="bg-gray-200 text-gray-500 px-4 py-2.5 rounded-xl cursor-not-allowed font-medium text-sm"
+                  className="border border-gray-200 text-gray-400 px-6 py-2 rounded-sm cursor-not-allowed font-sans text-xs uppercase tracking-widest"
                 >
-                  Unavailable
+                  SOLD OUT
                 </button>
               ) : quantity === 0 ? (
                 <button
                   onClick={handleAddToCart}
-                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2.5 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:scale-105 font-medium text-sm shadow-lg hover:shadow-xl"
+                  className="bg-koibito-red text-white px-6 py-2 rounded-sm hover:opacity-90 transition-all duration-300 font-sans text-xs uppercase tracking-[0.1em] shadow-sm active:scale-95"
                 >
-                  {item.variations?.length || item.addOns?.length ? 'Customize' : 'Add to Cart'}
+                  {item.variations?.length || item.addOns?.length ? 'Customize' : 'Add Order'}
                 </button>
               ) : (
-                <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl p-1 border border-yellow-200">
+                <div className="flex items-center space-x-3 bg-koibito-gray px-2 py-1 rounded-sm border border-gray-200">
                   <button
                     onClick={handleDecrement}
-                    className="p-2 hover:bg-yellow-200 rounded-lg transition-colors duration-200 hover:scale-110"
+                    className="p-1.5 hover:bg-white rounded-sm transition-all duration-200 text-koibito-dark"
                   >
-                    <Minus className="h-4 w-4 text-gray-700" />
+                    <Minus className="h-4 w-4" />
                   </button>
-                  <span className="font-bold text-gray-900 min-w-[28px] text-center text-sm">{quantity}</span>
+                  <span className="font-display text-xl text-koibito-dark min-w-[24px] text-center">{quantity}</span>
                   <button
                     onClick={handleIncrement}
-                    className="p-2 hover:bg-yellow-200 rounded-lg transition-colors duration-200 hover:scale-110"
+                    className="p-1.5 hover:bg-white rounded-sm transition-all duration-200 text-koibito-dark"
                   >
-                    <Plus className="h-4 w-4 text-gray-700" />
+                    <Plus className="h-4 w-4" />
                   </button>
                 </div>
               )}
             </div>
           </div>
-
-          {/* Add-ons indicator */}
-          {item.addOns && item.addOns.length > 0 && (
-            <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
-              <span>+</span>
-              <span>{item.addOns.length} add-on{item.addOns.length > 1 ? 's' : ''} available</span>
-            </div>
-          )}
         </div>
       </div>
 
       {/* Customization Modal */}
       {showCustomization && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between rounded-t-2xl">
+        <div className="fixed inset-0 bg-koibito-dark/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-sm max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-koibito-red/10">
+            <div className="sticky top-0 bg-white border-b border-koibito-gray p-4 md:p-6 flex items-center justify-between z-10">
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">Customize {item.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">Choose your preferences</p>
+                <h3 className="font-display text-xl md:text-2xl text-koibito-dark tracking-tight">Customize {item.name}</h3>
+                <p className="text-[9px] md:text-sm font-sans text-gray-400 mt-0.5 uppercase tracking-widest leading-none">Select your order details</p>
               </div>
               <button
                 onClick={() => setShowCustomization(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                className="p-2 hover:bg-koibito-gray rounded-full transition-colors duration-200"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5 text-koibito-dark" />
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 md:p-6 pb-32 md:pb-36">
               {/* Size Variations */}
               {item.variations && item.variations.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">Choose Size</h4>
+                <div className="mb-8">
+                  <h4 className="font-display text-xl text-koibito-dark mb-4">Select Option</h4>
                   <div className="space-y-3">
                     {item.variations.map((variation) => (
                       <label
                         key={variation.id}
-                        className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                          selectedVariation?.id === variation.id
-                            ? 'border-red-500 bg-red-50'
-                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                        }`}
+                        className={`flex items-center justify-between p-4 border rounded-sm cursor-pointer transition-all duration-200 ${selectedVariation?.id === variation.id
+                          ? 'border-koibito-red bg-koibito-red/5'
+                          : 'border-koibito-gray hover:border-gray-300 hover:bg-gray-50'
+                          }`}
                       >
                         <div className="flex items-center space-x-3">
                           <input
@@ -270,12 +242,12 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                             name="variation"
                             checked={selectedVariation?.id === variation.id}
                             onChange={() => setSelectedVariation(variation)}
-                            className="text-red-600 focus:ring-red-500"
+                            className="text-koibito-red focus:ring-koibito-red"
                           />
-                          <span className="font-medium text-gray-900">{variation.name}</span>
+                          <span className="font-sans text-sm font-medium text-koibito-dark">{variation.name}</span>
                         </div>
-                        <span className="text-gray-900 font-semibold">
-                          ₱{((item.effectivePrice || item.basePrice) + variation.price).toFixed(2)}
+                        <span className="font-display text-lg text-koibito-red">
+                          ₱{((item.effectivePrice || item.basePrice) + variation.price).toFixed(0)}
                         </span>
                       </label>
                     ))}
@@ -285,40 +257,40 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
               {/* Add-ons */}
               {groupedAddOns && Object.keys(groupedAddOns).length > 0 && (
-                <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-4">Add-ons</h4>
+                <div className="mb-8">
+                  <h4 className="font-display text-xl text-koibito-dark mb-4">Extras</h4>
                   {Object.entries(groupedAddOns).map(([category, addOns]) => (
-                    <div key={category} className="mb-4">
-                      <h5 className="text-sm font-medium text-gray-700 mb-3 capitalize">
+                    <div key={category} className="mb-6 last:mb-0">
+                      <h5 className="text-[10px] font-bold text-koibito-red uppercase tracking-[0.2em] mb-3">
                         {category.replace('-', ' ')}
                       </h5>
                       <div className="space-y-3">
                         {addOns.map((addOn) => (
                           <div
                             key={addOn.id}
-                            className="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
+                            className="flex items-center justify-between p-4 border border-koibito-gray rounded-sm hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
                           >
                             <div className="flex-1">
-                              <span className="font-medium text-gray-900">{addOn.name}</span>
-                              <div className="text-sm text-gray-600">
-                                {addOn.price > 0 ? `₱${addOn.price.toFixed(2)} each` : 'Free'}
+                              <span className="font-sans text-sm text-koibito-dark">{addOn.name}</span>
+                              <div className="text-xs text-gray-400 font-sans mt-0.5">
+                                {addOn.price > 0 ? `+ ₱${addOn.price.toFixed(0)}` : 'Included'}
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center space-x-2">
                               {selectedAddOns.find(a => a.id === addOn.id) ? (
-                                <div className="flex items-center space-x-2 bg-red-100 rounded-xl p-1 border border-red-200">
+                                <div className="flex items-center space-x-3 bg-koibito-gray px-2 py-1 rounded-sm border border-gray-200">
                                   <button
                                     type="button"
                                     onClick={() => {
                                       const current = selectedAddOns.find(a => a.id === addOn.id);
                                       updateAddOnQuantity(addOn, (current?.quantity || 1) - 1);
                                     }}
-                                    className="p-1.5 hover:bg-red-200 rounded-lg transition-colors duration-200"
+                                    className="p-1 hover:bg-white rounded-sm transition-all duration-200"
                                   >
-                                    <Minus className="h-3 w-3 text-red-600" />
+                                    <Minus className="h-3 w-3 text-koibito-dark" />
                                   </button>
-                                  <span className="font-semibold text-gray-900 min-w-[24px] text-center text-sm">
+                                  <span className="font-display text-lg text-koibito-dark min-w-[20px] text-center">
                                     {selectedAddOns.find(a => a.id === addOn.id)?.quantity || 0}
                                   </span>
                                   <button
@@ -327,19 +299,18 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                                       const current = selectedAddOns.find(a => a.id === addOn.id);
                                       updateAddOnQuantity(addOn, (current?.quantity || 0) + 1);
                                     }}
-                                    className="p-1.5 hover:bg-red-200 rounded-lg transition-colors duration-200"
+                                    className="p-1 hover:bg-white rounded-sm transition-all duration-200"
                                   >
-                                    <Plus className="h-3 w-3 text-red-600" />
+                                    <Plus className="h-3 w-3 text-koibito-dark" />
                                   </button>
                                 </div>
                               ) : (
                                 <button
                                   type="button"
                                   onClick={() => updateAddOnQuantity(addOn, 1)}
-                                  className="flex items-center space-x-1 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 text-sm font-medium shadow-lg"
+                                  className="px-4 py-1.5 bg-koibito-red text-white rounded-sm hover:opacity-90 transition-all duration-200 text-[10px] font-bold uppercase tracking-widest shadow-sm"
                                 >
-                                  <Plus className="h-3 w-3" />
-                                  <span>Add</span>
+                                  ADD
                                 </button>
                               )}
                             </div>
@@ -351,20 +322,19 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                 </div>
               )}
 
-              {/* Price Summary */}
-              <div className="border-t border-gray-200 pt-4 mb-6">
-                <div className="flex items-center justify-between text-2xl font-bold text-gray-900">
-                  <span>Total:</span>
-                  <span className="text-red-600">₱{calculatePrice().toFixed(2)}</span>
-                </div>
-              </div>
+            </div>
 
+            {/* Price Summary Sticky Footer */}
+            <div className="sticky bottom-0 bg-white border-t border-koibito-gray p-4 md:p-6 shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-10">
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-display text-lg md:text-xl text-koibito-dark uppercase tracking-widest">Total Price</span>
+                <span className="font-display text-2xl md:text-3xl text-koibito-red">₱{calculatePrice().toFixed(0)}</span>
+              </div>
               <button
                 onClick={handleCustomizedAddToCart}
-                className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-4 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 font-semibold flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                className="w-full bg-koibito-red text-white py-4 rounded-sm hover:opacity-90 transition-all duration-300 font-display text-xl tracking-widest shadow-md active:scale-[0.98]"
               >
-                <ShoppingCart className="h-5 w-5" />
-                <span>Add to Cart - ₱{calculatePrice().toFixed(2)}</span>
+                ADD TO ORDERS
               </button>
             </div>
           </div>

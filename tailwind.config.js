@@ -4,6 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
+        koibito: {
+          red: '#701a11',
+          gray: '#e6e6e6',
+          dark: '#1a1a1a',
+          accent: '#d97706',
+          light: '#f9f9f9'
+        },
         ramen: {
           red: '#D7263D',
           dark: '#0B0A0A',
@@ -17,6 +24,9 @@ export default {
         }
       },
       fontFamily: {
+        'display': ['Italiana', 'serif'],
+        'script': ['Caveat', 'cursive'],
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
         'pretendard': ['Pretendard', 'system-ui', 'sans-serif'],
         'noto-kr': ['Noto Serif KR', 'serif']
       },
