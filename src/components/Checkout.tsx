@@ -16,6 +16,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [contactNumber, setContactNumber] = useState('');
   const [address, setAddress] = useState('');
   const [landmark, setLandmark] = useState('');
+  const [deliveryTime, setDeliveryTime] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gcash');
   const [deliveryArea, setDeliveryArea] = useState<'montalban' | 'san-mateo' | ''>('');
   const [notes, setNotes] = useState('');
@@ -49,6 +50,7 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
 📞 Contact: ${contactNumber}
 📍 Service: Delivery
 🏠 Address: ${address}${landmark ? `\n🗺️ Landmark: ${landmark}` : ''}
+🕒 Time: ${deliveryTime}
 
 
 📋 ORDER DETAILS:
@@ -81,13 +83,13 @@ Please confirm this order to proceed. Thank you for choosing KOIBITO! 🍱
     `.trim();
 
     const encodedMessage = encodeURIComponent(orderDetails);
-    const messengerUrl = `https://m.me/61582386551670?text=${encodedMessage}`;
+    const messengerUrl = `https://m.me/100064992872218?text=${encodedMessage}`;
 
     window.open(messengerUrl, '_blank');
 
   };
 
-  const isDetailsValid = customerName && contactNumber && address && deliveryArea;
+  const isDetailsValid = customerName && contactNumber && address && deliveryArea && deliveryTime;
 
   if (step === 'details') {
     return (
@@ -224,6 +226,18 @@ Please confirm this order to proceed. Thank you for choosing KOIBITO! 🍱
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-black mb-2">Time of Delivery *</label>
+                <input
+                  type="text"
+                  value={deliveryTime}
+                  onChange={(e) => setDeliveryTime(e.target.value)}
+                  className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                  placeholder="e.g., 12:30 PM, ASAP, evening"
+                  required
+                />
+              </div>
+
               {/* Special Notes */}
               <div>
                 <label className="block text-sm font-medium text-black mb-2">Special Instructions</label>
@@ -337,6 +351,7 @@ Please confirm this order to proceed. Thank you for choosing KOIBITO! 🍱
               <p className="text-sm text-gray-600">Area: {deliveryArea === 'montalban' ? 'Montalban (₱45)' : 'San Mateo (₱70)'}</p>
               <p className="text-sm text-gray-600">Address: {address}</p>
               {landmark && <p className="text-sm text-gray-600">Landmark: {landmark}</p>}
+              <p className="text-sm text-gray-600 font-semibold mt-1">🕒 Time of Delivery: {deliveryTime}</p>
             </div>
 
             {cartItems.map((item) => (
