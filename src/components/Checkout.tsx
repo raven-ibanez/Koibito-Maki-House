@@ -18,10 +18,10 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   const [landmark, setLandmark] = useState('');
   const [deliveryTime, setDeliveryTime] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('gcash');
-  const [deliveryArea, setDeliveryArea] = useState<'montalban' | 'san-mateo' | ''>('');
+  const [deliveryArea, setDeliveryArea] = useState<'pickup' | 'montalban' | 'san-mateo' | ''>('');
   const [notes, setNotes] = useState('');
 
-  const deliveryFee = deliveryArea === 'montalban' ? 45 : (deliveryArea === 'san-mateo' ? 70 : 0);
+  const deliveryFee = deliveryArea === 'pickup' ? 0 : (deliveryArea === 'montalban' ? 45 : (deliveryArea === 'san-mateo' ? 70 : 0));
 
   const totalPriceWithFee = totalPrice + deliveryFee;
 
@@ -43,13 +43,14 @@ const Checkout: React.FC<CheckoutProps> = ({ cartItems, totalPrice, onBack }) =>
   };
 
   const handlePlaceOrder = () => {
+    const isPickup = deliveryArea === 'pickup';
     const orderDetails = `
 🛒 KOIBITO ORDER
 
 👤 Customer: ${customerName}
 📞 Contact: ${contactNumber}
-📍 Service: Delivery
-🏠 Address: ${address}${landmark ? `\n🗺️ Landmark: ${landmark}` : ''}
+📍 Service: ${isPickup ? 'Pickup' : 'Delivery'}
+${isPickup ? '🏠 Pickup Location: P5H2+8JF Rodriguez, Rizal' : `🏠 Address: ${address}${landmark ? `\n🗺️ Landmark: ${landmark}` : ''}`}
 🕒 Time: ${deliveryTime}
 
 
@@ -71,7 +72,7 @@ ${cartItems.map(item => {
     }).join('\n')}
 
 💰 ITEMS TOTAL: ₱${totalPrice}
-🛵 DELIVERY AREA: ${deliveryArea === 'montalban' ? 'Montalban (₱45)' : 'San Mateo (₱70)'}
+🛵 ${deliveryArea === 'pickup' ? 'PICKUP at P5H2+8JF Rodriguez, Rizal' : `DELIVERY AREA: ${deliveryArea === 'montalban' ? 'Montalban (₱45)' : 'San Mateo (₱70)'}`}
 💰 GRAND TOTAL: ₱${totalPriceWithFee}
 
 💳 Payment: ${selectedPaymentMethod?.name || paymentMethod}
@@ -89,7 +90,7 @@ Please confirm this order to proceed. Thank you for choosing KOIBITO! 🍱
 
   };
 
-  const isDetailsValid = customerName && contactNumber && address && deliveryArea && deliveryTime;
+  const isDetailsValid = customerName && contactNumber && (deliveryArea === 'pickup' || address) && deliveryArea && deliveryTime;
 
   if (step === 'details') {
     return (
@@ -178,11 +179,12 @@ Please confirm this order to proceed. Thank you for choosing KOIBITO! 🍱
                 />
               </div>
 
-              {/* Delivery Area Selection */}
+              {/* Service Type Selection */}
               <div>
-                <label className="block text-sm font-medium text-black mb-3">Delivery Area *</label>
-                <div className="grid grid-cols-2 gap-3">
+                <label className="block text-sm font-medium text-black mb-3">Service Type *</label>
+                <div className="grid grid-cols-3 gap-3">
                   {[
+                    { value: 'pickup', label: 'Pickup', fee: 0 },
                     { value: 'montalban', label: 'Montalban', fee: 45 },
                     { value: 'san-mateo', label: 'San Mateo', fee: 70 }
                   ].map((area) => (
@@ -196,44 +198,56 @@ Please confirm this order to proceed. Thank you for choosing KOIBITO! 🍱
                         }`}
                     >
                       <div className="font-medium">{area.label}</div>
-                      <div className={`text-xs ${deliveryArea === area.value ? 'text-white/80' : 'text-gray-500'}`}>₱{area.fee} Delivery Fee</div>
+                      <div className={`text-xs ${deliveryArea === area.value ? 'text-white/80' : 'text-gray-500'}`}>
+                        {area.value === 'pickup' ? 'FREE' : `₱${area.fee} Delivery`}
+                      </div>
                     </button>
                   ))}
                 </div>
+                {deliveryArea === 'pickup' && (
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-800 font-medium">📍 Pickup Location:</p>
+                    <p className="text-sm text-green-700">P5H2+8JF Rodriguez, Rizal</p>
+                  </div>
+                )}
               </div>
 
               {/* Delivery Address */}
-              <div>
-                <label className="block text-sm font-medium text-black mb-2">Delivery Address *</label>
-                <textarea
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                  placeholder="Enter your complete delivery address"
-                  rows={3}
-                  required
-                />
-              </div>
+              {deliveryArea !== 'pickup' && deliveryArea !== '' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-black mb-2">Delivery Address *</label>
+                    <textarea
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Enter your complete delivery address"
+                      rows={3}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-black mb-2">Landmark</label>
+                    <input
+                      type="text"
+                      value={landmark}
+                      onChange={(e) => setLandmark(e.target.value)}
+                      className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                      placeholder="e.g., Near McDonald's, Beside 7-Eleven, In front of school"
+                    />
+                  </div>
+                </>
+              )}
 
               <div>
-                <label className="block text-sm font-medium text-black mb-2">Landmark</label>
-                <input
-                  type="text"
-                  value={landmark}
-                  onChange={(e) => setLandmark(e.target.value)}
-                  className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                  placeholder="e.g., Near McDonald's, Beside 7-Eleven, In front of school"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-black mb-2">Time of Delivery *</label>
+                <label className="block text-sm font-medium text-black mb-2">Time of ${deliveryArea === 'pickup' ? 'Pickup' : 'Delivery'} *</label>
                 <input
                   type="text"
                   value={deliveryTime}
                   onChange={(e) => setDeliveryTime(e.target.value)}
                   className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                  placeholder="e.g., 12:30 PM, ASAP, evening"
+                  placeholder={deliveryArea === 'pickup' ? "e.g., 12:30 PM, today" : "e.g., 12:30 PM, ASAP, evening"}
                   required
                 />
               </div>
@@ -347,8 +361,12 @@ Please confirm this order to proceed. Thank you for choosing KOIBITO! 🍱
               <h4 className="font-medium text-black mb-2">Customer Details</h4>
               <p className="text-sm text-gray-600">Name: {customerName}</p>
               <p className="text-sm text-gray-600">Contact: {contactNumber}</p>
-              <p className="text-sm text-gray-600">Service: Delivery</p>
-              <p className="text-sm text-gray-600">Area: {deliveryArea === 'montalban' ? 'Montalban (₱45)' : 'San Mateo (₱70)'}</p>
+              <p className="text-sm text-gray-600">Service: {deliveryArea === 'pickup' ? 'Pickup' : 'Delivery'}</p>
+              <p className="text-sm text-gray-600">
+                {deliveryArea === 'pickup'
+                  ? 'Pickup at: P5H2+8JF Rodriguez, Rizal'
+                  : `Area: ${deliveryArea === 'montalban' ? 'Montalban (₱45)' : 'San Mateo (₱70)'}`}
+              </p>
               <p className="text-sm text-gray-600">Address: {address}</p>
               {landmark && <p className="text-sm text-gray-600">Landmark: {landmark}</p>}
               <p className="text-sm text-gray-600 font-semibold mt-1">🕒 Time of Delivery: {deliveryTime}</p>
